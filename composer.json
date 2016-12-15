@@ -1,9 +1,9 @@
 {
-  "name": "icubeus/advancerate",
+  "name": "ced/advancerate",
   "description": "Enable shipping rate define functionality for Admin",
   "license": "proprietary",
   "require": {
-    "icubeus/advancerate":"dev-master"
+    "ced/advancerate":"dev-master"
   },
   "minimum-stability": "dev",
   "type": "magento2-module",
