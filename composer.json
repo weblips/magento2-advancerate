@@ -1,5 +1,5 @@
 {
-  "name": "ced/module-advancerate",
+  "name": "icubeus/advancerate",
   "description": "Enable shipping rate define functionality for Admin",
   "require": {
    "php": "~5.5.0|~5.6.0|~7.0.0"
