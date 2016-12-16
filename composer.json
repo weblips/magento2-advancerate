@@ -12,6 +12,7 @@
   },
   "type": "magento2-module",
   "version": "1.2.0",
+   "minimum-stability": "dev",
   "license": "proprietary",
   "autoload": {
    "files": [ "registration.php" ],
