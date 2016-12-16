@@ -3,7 +3,7 @@
   "description": "Enable shipping rate define functionality for Admin",
   "keywords": [
         "magento 2",
-        "advancerate"
+        "advancerate",
   ],
   "require": {
     "php": "~5.6.0|7.0.2|~7.0.6",
