@@ -134,7 +134,15 @@ class InstallSchema implements InstallSchemaInterface
         30,
         ['nullable' => false, 'default' => ''],
         'Shipping Label'
-        )->setComment(
+        )
+        ->addColumn(
+            'etd',
+            \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+            255,
+            ['nullable' => true, 'default' => ''],
+            'Estimation Day'
+        )
+        ->setComment(
             'Advanced Matrix Rate'
         );
         $installer->getConnection()->createTable($table);
