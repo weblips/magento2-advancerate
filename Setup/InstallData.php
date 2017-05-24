@@ -27,8 +27,7 @@ class InstallData implements InstallDataInterface
                 'label' => 'Dimension Package Height',
                 'input' => 'text',
                 'required' => false,
-                'sort_order' => 3,
-                'global' => \Magento\Catalog\Model\Resource\Eav\Attribute::SCOPE_STORE,
+                'sort_order' => 200,
                 'group' => 'Product Details',
                 'used_in_product_listing' => true,
                 'visible_on_front' => false
@@ -43,8 +42,7 @@ class InstallData implements InstallDataInterface
                 'label' => 'Dimension Package Length',
                 'input' => 'text',
                 'required' => false,
-                'sort_order' => 3,
-                'global' => \Magento\Catalog\Model\Resource\Eav\Attribute::SCOPE_STORE,
+                'sort_order' => 201,
                 'group' => 'Product Details',
                 'used_in_product_listing' => true,
                 'visible_on_front' => false
@@ -59,8 +57,7 @@ class InstallData implements InstallDataInterface
                 'label' => 'Dimension Package Height',
                 'input' => 'text',
                 'required' => false,
-                'sort_order' => 3,
-                'global' => \Magento\Catalog\Model\Resource\Eav\Attribute::SCOPE_STORE,
+                'sort_order' => 202,
                 'group' => 'Product Details',
                 'used_in_product_listing' => true,
                 'visible_on_front' => false
