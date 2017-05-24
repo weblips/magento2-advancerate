@@ -9,7 +9,7 @@ Instalation:
 
 To update:
 
-    composer update icubeus/magento2-citykecamatan
+    composer update icubeus/magento2-advancerate
 
 after instalation each product will have 3 custom attribute now (Dimension Package Height,Dimension Package width, Dimension Package length) for dimensional calculation purpose
 
