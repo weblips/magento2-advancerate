@@ -29,3 +29,5 @@ sample Indonesia shipping rate (make sure the store view is "default view")
 
 ![Gitbook](contributing/images/import.png)
 
+Note: please don't forget to enable one of the default shipping magento, and set to another country. example: free shipping, country to afganistan. this action is a MUST, because if we didn't do it, the rate won't appear in guest checkout.
+
