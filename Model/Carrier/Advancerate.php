@@ -171,6 +171,7 @@ class Advancerate extends \Magento\Shipping\Model\Carrier\AbstractCarrier implem
         	$method->setMethodTitle('Free Shipping');
         	$method->setPrice('0.00');
         	$method->setCost('0.00');
+            $method->setMethodDescription('#NA');
         	$result->append($method);
         	
         }
@@ -186,9 +187,10 @@ class Advancerate extends \Magento\Shipping\Model\Carrier\AbstractCarrier implem
         			$method->setCarrier($this->_code);
         			$method->setCarrierTitle($this->getConfigData('title'));
         			$method->setMethod('advancerate'.$count++);
-        			$method->setMethodTitle($rate['label']);
+        			$method->setMethodTitle($this->getConfigData('name'));
         			$method->setCost($rate['price']);
         			$method->setPrice($rate['price']);
+                    $method->setMethodDescription($rate['etd']);
         			$result->append($method);
         		}
         	}

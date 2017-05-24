@@ -56,6 +56,8 @@ class Advancerate extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 
     protected $_filesystem;
 
+    protected $_citySession;
+
     public function __construct(
             
         \Magento\Framework\Model\ResourceModel\Db\Context $context,
@@ -66,6 +68,7 @@ class Advancerate extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         \Magento\Directory\Model\ResourceModel\Country\CollectionFactory $countryCollectionFactory,
         \Magento\Directory\Model\ResourceModel\Region\CollectionFactory $regionCollectionFactory,
         \Magento\Framework\Filesystem $filesystem,
+         \Magento\Catalog\Model\Session $citySession,
         $connectionName = null
     ) {
        
@@ -76,6 +79,7 @@ class Advancerate extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         $this->_countryCollectionFactory = $countryCollectionFactory;
         $this->_regionCollectionFactory = $regionCollectionFactory;
         $this->_filesystem = $filesystem;
+        $this->_citySession = $citySession;
         parent::__construct($context, $connectionName);
     }
 
@@ -95,14 +99,37 @@ class Advancerate extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
         
         $connection = $this->getConnection();
         $condition = $this->_coreConfig->getValue('carriers/advancerate/ratecondition', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+
+        $postcode = $request->getDestPostcode();
+        $city     = $request->getDestCity();
+
+        if (strlen($postcode)>6) {
+            $data = explode('/', $postcode);
+            $ndata = count($data);
+            if($ndata==3){
+                $postcode = $data[0];
+                $city = $data[1].'/'.$data[2];
+            }elseif($ndata==4){
+                $postcode = $data[0];
+                $city = $data[1].'/'.$data[2].'/'.$data[3];
+            }   
+        }else{
+            $postcode = $request->getDestPostcode();
+            $city     = $request->getDestCity();
+            if(!$city){
+                $city = $this->_citySession->getMyValue();
+            }
+        }
+
      
         $bind = [
                     ':website_id' => (int) $request->getWebsiteId(),
                     //':vendor_id' => $this->getVendorId(),
                    ':dest_country_id' => $request->getDestCountryId(),
                    ':dest_region_id' => (int) $request->getDestRegionId(),
-                   ':city' => $request->getDestCity(),
-                   ':dest_zip' => $request->getDestPostcode()
+                   ':city' => $city,
+                   ':dest_zip' => $postcode
         ];
         $select = $connection->select()->from(
             $this->getMainTable()
@@ -171,24 +198,89 @@ class Advancerate extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
 
         $select->where($orWhere);
        
-        $result = $connection->fetchRow($select, $bind);
+        $result = $connection->fetchAll($select, $bind);
         //$logger->info(print_r($result, true));
         
         $methods = array();
         $rates = array();
-        $shippingWeight = ceil($request->getPackageWeight());
+        $weight_type = $this->_coreConfig->getValue('carriers/advancerate/weight_type', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        
+        if ($weight_type==1) { //0 kilogram , 1 gram
+             $shippingWeight = ceil($request->getPackageWeight()/1000);
+        }else{
+              $shippingWeight = ceil($request->getPackageWeight());
+        }
+       
+        
+        $dimensional_condition = $this->_coreConfig->getValue('carriers/advancerate/dimensional_calculation', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+      
+
         if(!empty($result)){
-             
+            foreach ($result as $key => $value) {
+                if (!in_array($value['shipping_method'] , $methods)) {
+                    $items = $request->getAllItems();
+                    $rate       = $value['price'];
+                    $totalPrice = 0;
+                    $totalWeight = 0;
+                    if ($dimensional_condition==1) {
+                        foreach ($items as $item) {
+                            $product = $objectManager->create('Magento\Catalog\Model\Product')
+                                                 ->load($item->getProductId());
+
+                            //product dimension in cm
+                            $height = $product->getData('dimension_package_height');
+                            $length = $product->getData('dimension_package_length');
+                            $width  = $product->getData('dimension_package_width'); 
+                            $weight = $product->getData('weight');
+                            $qty    = $item->getQty();
+                            
+                            $totalWeight = $weight * $qty;
+                            if ($weight_type==1) {
+                                 $totalWeight = $totalWeight / 1000; 
+                            }
+
+                             $totalVolume = ($length * $width * $height) * $qty;
+
+                            $writer = new \Zend\Log\Writer\Stream(BP . '/var/log/jne.log');
+                            $logger = new \Zend\Log\Logger();
+                            $logger->addWriter($writer);
+                            $logger->info("volume :".($totalVolume/6000)." weight:".$totalWeight." weighttype:".$weight_type); 
+                           
+                            ##dibandingkan berat dg volume/6000##
+                            $max = max($totalWeight,($totalVolume/6000));                                       
+                            // $max = $max + ($max*1/10);
+                            $price = $this->round_up($max,0) * $rate;
+                            $totalPrice += $price; 
+
+                        }
+                    }else{
+                          $totalPrice = $rate*$shippingWeight;
+                    }
+
                     $rates[] = array(
-                                'method' => $result['shipping_method'],
-                                'label' => $result['shipping_label'],
-                                'price' => $result['price']*$shippingWeight
-                            );
+                                 'method' => $value['shipping_method'],
+                                 'label' => $value['shipping_label'],
+                                 'price' => $totalPrice,
+                                 'etd'   => $value['etd']
+                             );
+                }
+            }
+        }else{
+            $rates = null;
         }   
         return $rates;
     }
     
     
+
+    protected function round_up($value, $places)
+    {
+        $mult = pow(10, abs($places)); 
+        
+        return $places < 0 ?
+            ceil($value / $mult) * $mult :
+            ceil($value * $mult) / $mult;
+    }
     
     
     /**
@@ -481,12 +573,13 @@ class Advancerate extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             $this->_importErrors[] = ___('Invalid Shipping Method Name "%s" in the Row #%s.', $row[11], $rowNumber);
             return false;
         }
-        $shipping_label=$row[11];
+        $shipping_label = $row[11];
+        $etd = $row[12];
         $vendorId = $this->getVendorId();
         return [
             $this->_importWebsiteId,$vendorId, $countryId, $regionId, $city, $zipCode,                   
             $weight_from, $weight_to, $price_from, $price_to, $qty_from,
-            $qty_to, $shipping_price, $shipping_method,$shipping_label          
+            $qty_to, $shipping_price, $shipping_method,$shipping_label, $etd          
         ];
     }
     
@@ -501,7 +594,7 @@ class Advancerate extends \Magento\Framework\Model\ResourceModel\Db\AbstractDb
             $columns = [
                 'website_id','vendor_id','dest_country_id','dest_region_id','city','dest_zip',
                 'weight_from','weight_to','price_from','price_to','qty_from',
-                'qty_to','price','shipping_method','shipping_label'
+                'qty_to','price','shipping_method','shipping_label', 'etd'
             ];
             $this->getConnection()->insertArray($this->getMainTable(), $columns, $data);
             $this->_importedRows += count($data);

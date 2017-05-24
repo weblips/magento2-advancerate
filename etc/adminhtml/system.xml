@@ -35,19 +35,34 @@
 				<field id="ratecondition" translate="label" type="select" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Restrict Rule For Calculation</label>
 					<source_model>Ced\Advancerate\Model\Option\Condition</source_model>
-                </field>		
-				<field id="export" translate="label" type="Ced\Advancerate\Block\Adminhtml\Form\Field\Export" sortOrder="5" showInDefault="0" showInWebsite="1" showInStore="0">
+                </field>
+                <field id="weight_type" translate="label" type="select" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Weight In</label>
+                    <source_model>Ced\Advancerate\Model\Option\Weight</source_model>
+                </field>
+
+                <field id="dimensional_calculation" translate="label" type="select" sortOrder="6" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Dimensional Calculation</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+
+                <field id="show_etd" translate="label" type="select" sortOrder="7" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Show Estimation Time</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+
+				<field id="export" translate="label" type="Ced\Advancerate\Block\Adminhtml\Form\Field\Export" sortOrder="8" showInDefault="0" showInWebsite="1" showInStore="0">
                     <label>Export Rates</label>
                 </field>				
-				<field id="use_download_product" translate="label" type="select" sortOrder="6" showInDefault="1" showInWebsite="1" showInStore="0">
+				<field id="use_download_product" translate="label" type="select" sortOrder="9" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Use Downloadable Product in Calculation</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="use_virtual_product" translate="label" type="select" sortOrder="7" showInDefault="1" showInWebsite="1" showInStore="0">
+                <field id="use_virtual_product" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Use Virtual Product in Calculation</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>				
-                <field id="import" translate="label" type="Ced\Advancerate\Block\Adminhtml\Form\Field\Import" sortOrder="8" showInDefault="0" showInWebsite="1" showInStore="0">
+                <field id="import" translate="label" type="Ced\Advancerate\Block\Adminhtml\Form\Field\Import" sortOrder="11" showInDefault="0" showInWebsite="1" showInStore="0">
                     <label>Import Rates</label>
                     <backend_model>Ced\Advancerate\Model\Config\Backend\Advancerate</backend_model>
                 </field>
@@ -59,15 +74,15 @@
                     <label>Handling Fee</label>
                     <validate>validate-number validate-zero-or-greater</validate>
                 </field>   -->                   
-                <field id="free_shipping" translate="label" type="select" sortOrder="11" showInDefault="1" showInWebsite="1" showInStore="0">
+                <field id="free_shipping" translate="label" type="select" sortOrder="12" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Allow Free Shipping</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-				<field id="max_freeshipping_weight" translate="label" type="text" sortOrder="12" showInDefault="1" showInWebsite="1" showInStore="0">
+				<field id="max_freeshipping_weight" translate="label" type="text" sortOrder="13" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Maximum Weight For Free Shipping</label>
 					<validate>validate-number validate-zero-or-greater</validate>
                 </field>
-				<field id="min_freeshipping_amount" translate="label" type="text" sortOrder="13" showInDefault="1" showInWebsite="1" showInStore="0">
+				<field id="min_freeshipping_amount" translate="label" type="text" sortOrder="14" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Minimum Order Amount For Free Shipping</label>
 					<validate>validate-number validate-zero-or-greater</validate>
                 </field>

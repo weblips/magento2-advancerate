@@ -164,6 +164,10 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 			'shipping_label',
 			['header' => __('Shipping Method'), 'index' => 'shipping_label']
 		);
+    $this->addColumn(
+      'etd',
+      ['header' => __('Estimation Day'), 'index' => 'etd']
+    );
 		
         return parent::_prepareColumns();
     }
