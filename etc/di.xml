@@ -2,5 +2,12 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../../lib/internal/Magento/Framework/ObjectManager/etc/config.xsd">
    <type name="Magento\Quote\Model\Cart\ShippingMethodConverter">
         <plugin name="RateResponIcube" type="Ced\Advancerate\Plugin\Converter" sortOrder="1" />
-    </type>
+   </type>
+   <type name="Magento\Framework\Console\CommandList">
+		<arguments>
+			<argument name="commands" xsi:type="array">
+				<item name="rateimport" xsi:type="object">Ced\Advancerate\Model\Rateimportfile</item>
+			</argument>
+		</arguments>
+	</type>
 </config>
