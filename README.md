@@ -23,6 +23,11 @@ configuration:
 * Show Estimation Time : estimate delivery
 * etc
 
+import rate via CLI :
+
+* add advancerate.csv or rate with format *.csv into pub/rateimport
+* run php bin/magento ced:importrate via CLI
+
 
 sample Indonesia shipping rate (make sure the store view is "default view")
 [sample.csv](https://github.com/icubeus/magento2-advancerate/blob/master/contributing/sample.csv)
