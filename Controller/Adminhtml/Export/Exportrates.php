@@ -63,7 +63,7 @@ class Exportrates extends \Magento\Config\Controller\Adminhtml\System\AbstractCo
         if ($this->getRequest()->getParam('conditionName')) {
             $conditionName = $this->getRequest()->getParam('conditionName');
         } else {
-            $conditionName = $website->getConfig('carriers/saprate/condition_name');
+            $conditionName = $this->getVendorId();
         }
 
         $gridBlock->setWebsiteId($website->getId())->setConditionName($conditionName);
