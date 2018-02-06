@@ -158,23 +158,23 @@ class Advancerate extends \Magento\Shipping\Model\Carrier\AbstractCarrier implem
        
         $rates = $this->getdefaultRate($request);
        // print_r($rates);echo "admin";
-        // if ($this->_scopeConfig->getValue('carriers/advancerate/free_shipping', \Magento\Store\Model\ScopeInterface::SCOPE_STORE) && 
-        // 		($request->getFreeShipping() === true || 
-        // 		($request->getPackageValue() >= $this->_scopeConfig->getValue('carriers/advancerate/min_freeshipping_amount', \Magento\Store\Model\ScopeInterface::SCOPE_STORE) && 
-        // 		$request->getPackageWeight() <= $this->_scopeConfig->getValue('carriers/advancerate/max_freeshipping_weight', \Magento\Store\Model\ScopeInterface::SCOPE_STORE))))
-        //   {
+        if ($this->_scopeConfig->getValue('carriers/advancerate/free_shipping', \Magento\Store\Model\ScopeInterface::SCOPE_STORE) && 
+        		($request->getFreeShipping() === true || 
+        		($request->getPackageValue() >= $this->_scopeConfig->getValue('carriers/advancerate/min_freeshipping_amount', \Magento\Store\Model\ScopeInterface::SCOPE_STORE) && 
+        		$request->getPackageWeight() <= $this->_scopeConfig->getValue('carriers/advancerate/max_freeshipping_weight', \Magento\Store\Model\ScopeInterface::SCOPE_STORE))))
+          {
         	
-        // 	$method = $this->_rateMethodFactory->create();
-        // 	$method->setCarrier($this->_code);
-        // 	$method->setCarrierTitle("Advance Rate");
-        // 	$method->setMethod('rate_free');
-        // 	$method->setMethodTitle('Free Shipping');
-        // 	$method->setPrice('0.00');
-        // 	$method->setCost('0.00');
-        //     $method->setMethodDescription('#NA');
-        // 	$result->append($method);
+        	$method = $this->_rateMethodFactory->create();
+        	$method->setCarrier($this->_code);
+        	$method->setCarrierTitle("Advance Rate");
+        	$method->setMethod('rate_free');
+        	$method->setMethodTitle('Free Shipping');
+        	$method->setPrice('0.00');
+        	$method->setCost('0.00');
+            $method->setMethodDescription('#NA');
+        	$result->append($method);
         	
-        // }
+        }
         
         
         if (!empty($rates)) {
