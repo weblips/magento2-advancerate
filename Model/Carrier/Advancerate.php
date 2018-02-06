@@ -158,56 +158,69 @@ class Advancerate extends \Magento\Shipping\Model\Carrier\AbstractCarrier implem
        
         $rates = $this->getdefaultRate($request);
        // print_r($rates);echo "admin";
-        if ($this->_scopeConfig->getValue('carriers/advancerate/free_shipping', \Magento\Store\Model\ScopeInterface::SCOPE_STORE) && 
-        		($request->getFreeShipping() === true || 
-        		($request->getPackageValue() >= $this->_scopeConfig->getValue('carriers/advancerate/min_freeshipping_amount', \Magento\Store\Model\ScopeInterface::SCOPE_STORE) && 
-        		$request->getPackageWeight() <= $this->_scopeConfig->getValue('carriers/advancerate/max_freeshipping_weight', \Magento\Store\Model\ScopeInterface::SCOPE_STORE))))
-          {
+        // if ($this->_scopeConfig->getValue('carriers/advancerate/free_shipping', \Magento\Store\Model\ScopeInterface::SCOPE_STORE) && 
+        // 		($request->getFreeShipping() === true || 
+        // 		($request->getPackageValue() >= $this->_scopeConfig->getValue('carriers/advancerate/min_freeshipping_amount', \Magento\Store\Model\ScopeInterface::SCOPE_STORE) && 
+        // 		$request->getPackageWeight() <= $this->_scopeConfig->getValue('carriers/advancerate/max_freeshipping_weight', \Magento\Store\Model\ScopeInterface::SCOPE_STORE))))
+        //   {
         	
-        	$method = $this->_rateMethodFactory->create();
-        	$method->setCarrier($this->_code);
-        	$method->setCarrierTitle("Advance Rate");
-        	$method->setMethod('rate_free');
-        	$method->setMethodTitle('Free Shipping');
-        	$method->setPrice('0.00');
-        	$method->setCost('0.00');
-            $method->setMethodDescription('#NA');
-        	$result->append($method);
+        // 	$method = $this->_rateMethodFactory->create();
+        // 	$method->setCarrier($this->_code);
+        // 	$method->setCarrierTitle("Advance Rate");
+        // 	$method->setMethod('rate_free');
+        // 	$method->setMethodTitle('Free Shipping');
+        // 	$method->setPrice('0.00');
+        // 	$method->setCost('0.00');
+        //     $method->setMethodDescription('#NA');
+        // 	$result->append($method);
         	
-        }
+        // }
         
         
         if (!empty($rates)) {
-        	$count=0;
-        	foreach ($rates as $rate)
-        	{
-        		if (!empty($rate) && $rate['price'] >= 0) {
-        			$method = $this->_rateMethodFactory->create();
+            $count=0;
+            foreach ($rates as $rate)
+            {
+                if (!empty($rate) && $rate['price'] >= 0) {
+                    $method = $this->_rateMethodFactory->create();
         
-        			$method->setCarrier($this->_code);
-        			$method->setCarrierTitle($this->getConfigData('title'));
-        			$method->setMethod('advancerate'.$count++);
-        			$method->setMethodTitle($this->getConfigData('name'));
-        			$method->setCost($rate['price']);
-        			$method->setPrice($rate['price']);
+                    $method->setCarrier($this->_code);
+                    $method->setCarrierTitle($this->getConfigData('title'));
+                    $method->setMethod('advancedmatrix'.$count++);
+                    $method->setMethodTitle($rate['label']);
+                    /* Icube Update - Check wheter get Free Shipping Yes => set price into 0 */
+                    if ($this->_scopeConfig->getValue('carriers/advancedmatrix/free_shipping', \Magento\Store\Model\ScopeInterface::SCOPE_STORE) && 
+                ($request->getFreeShipping() === true || 
+                ($request->getPackageValue() >= $this->_scopeConfig->getValue('carriers/advancedmatrix/min_freeshipping_amount', \Magento\Store\Model\ScopeInterface::SCOPE_STORE) && 
+                $request->getPackageWeight() <= $this->_scopeConfig->getValue('carriers/advancedmatrix/max_freeshipping_weight', \Magento\Store\Model\ScopeInterface::SCOPE_STORE))))
+                    {
+                        $method->setPrice('0.00');
+                        $method->setCost('0.00');
+                    }
+                    else
+                    {
+                        /* Icube Update - Original Code */                  
+                        $method->setCost($rate['price']);
+                        $method->setPrice($rate['price']);
+                    }
                     $method->setMethodDescription($rate['etd']);
-        			$result->append($method);
-        		}
-        	}
-        		
+                    $result->append($method);
+                }
+            }
+                
         }        
         else {
-        	/** @var \Magento\Quote\Model\Quote\Address\RateResult\Error $error */
-        	$error = $this->_rateErrorFactory->create(
-        			[
-        			'data' => [
-        			'carrier' => $this->_code,
-        			'carrier_title' => $this->getConfigData('title'),
-        			'error_message' => $this->getConfigData('specificerrmsg'),
-        			],
-        			]
-        	);
-        	$result->append($error);
+            /** @var \Magento\Quote\Model\Quote\Address\RateResult\Error $error */
+            $error = $this->_rateErrorFactory->create(
+                    [
+                    'data' => [
+                    'carrier' => $this->_code,
+                    'carrier_title' => $this->getConfigData('title'),
+                    'error_message' => $this->getConfigData('specificerrmsg'),
+                    ],
+                    ]
+            );
+            $result->append($error);
         }
         
      
