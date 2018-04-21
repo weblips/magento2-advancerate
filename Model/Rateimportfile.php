@@ -322,7 +322,7 @@ class Rateimportfile extends Command
     
     protected function _parseDecimalValue($value)
     {
-        if (!is_numeric($value)) {
+        if (!is_numeric(floatval($value))) {
             return false;
         }
         $value = (double)sprintf('%.4F', $value);
