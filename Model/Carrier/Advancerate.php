@@ -57,7 +57,7 @@ class Advancerate extends \Magento\Shipping\Model\Carrier\AbstractCarrier implem
         \Ced\Advancerate\Model\ResourceModel\Carrier\AdvancerateFactory $tablerateFactory,
         array $data = []
     ) {
-    	$this->_scopeConfig = $scopeConfig;
+        $this->_scopeConfig = $scopeConfig;
         $this->_rateResultFactory = $rateResultFactory;
         $this->_rateMethodFactory = $rateMethodFactory;
         $this->_tablerateFactory = $tablerateFactory;
@@ -71,35 +71,35 @@ class Advancerate extends \Magento\Shipping\Model\Carrier\AbstractCarrier implem
      */
     public function collectRates(RateRequest $request)
     {
-    	//echo "masuk";die();
+        
         $oldValue = $request->getPackageValue();
         $oldWeight = $request->getPackageWeight();
         $oldQty = $request->getPackageQty();
         $freeQty = 0;
         // exclude Virtual products price from Package value if pre-configured
         if (!$this->getConfigFlag('use_virtual_product') && $request->getAllItems()) {
-        	
+            
             foreach ($request->getAllItems() as $item) {
                 if ($item->getParentItem()) {
                     continue;
                 }
-				
+                
                 if ($item->getHasChildren() && $item->isShipSeparately()) {
-                	
+                    
                     foreach ($item->getChildren() as $child) {
                         if ($child->getProduct()->isVirtual()) {
                             $request->setPackageValue($request->getPackageValue() - $child->getBaseRowTotal());
                         }
                     }
                 } elseif ($item->getProduct()->getTypeId() == 'virtual') {
-                	
+                    
                     $request->setPackageValue($request->getPackageValue() - $item->getBaseRowTotal());
                 }
             }
         }
-		 // exclude Downloadable products price from Package value if pre-configured
+         // exclude Downloadable products price from Package value if pre-configured
         if (!$this->getConfigFlag('use_download_product') && $request->getAllItems()) {
-        	
+            
             foreach ($request->getAllItems() as $item) {
                 if ($item->getParentItem()) {
                     continue;
@@ -108,17 +108,15 @@ class Advancerate extends \Magento\Shipping\Model\Carrier\AbstractCarrier implem
                 
                 if ($item->getHasChildren() && $item->isShipSeparately()) {
                     foreach ($item->getChildren() as $child) {
-                    	
-                    	//return($child->getProduct());die;
-                    	
-                    	
+                        
+                        
                         if ($child->getProduct()->getTypeId()=='downloadable') {
-                        	
+                            
                             $request->setPackageValue($request->getPackageValue() - $child->getBaseRowTotal());
                         }
                     }
                 } elseif ($item->getProduct()->getTypeId()=='downloadable') {
-                	
+                    
                     $request->setPackageValue($request->getPackageValue() - $item->getBaseRowTotal());
                 }
             }
@@ -157,24 +155,33 @@ class Advancerate extends \Magento\Shipping\Model\Carrier\AbstractCarrier implem
         $result = $this->_rateResultFactory->create();
        
         $rates = $this->getdefaultRate($request);
-       // print_r($rates);echo "admin";
-        if ($this->_scopeConfig->getValue('carriers/advancerate/free_shipping', \Magento\Store\Model\ScopeInterface::SCOPE_STORE) && 
-        		($request->getFreeShipping() === true || 
-        		($request->getPackageValue() >= $this->_scopeConfig->getValue('carriers/advancerate/min_freeshipping_amount', \Magento\Store\Model\ScopeInterface::SCOPE_STORE) && 
-        		$request->getPackageWeight() <= $this->_scopeConfig->getValue('carriers/advancerate/max_freeshipping_weight', \Magento\Store\Model\ScopeInterface::SCOPE_STORE))))
+        
+        $var_free_shipping = $this->_scopeConfig->getValue('carriers/advancerate/free_shipping', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        $var_min_freeshipping_amount = $this->_scopeConfig->getValue('carriers/advancerate/min_freeshipping_amount', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        $var_max_freeshipping_weight = $this->_scopeConfig->getValue('carriers/advancerate/max_freeshipping_weight', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+
+        /*if ( $var_free_shipping && 
+                (
+                    $request->getFreeShipping() === true && 
+                        (
+                            ($request->getPackageValue() >=  $var_min_freeshipping_amount || $var_min_freeshipping_amount == "") &&
+                            ($request->getPackageWeight() <= $var_max_freeshipping_weight || $var_max_freeshipping_weight == "")
+                        )
+                )
+            )
           {
-        	
-        	$method = $this->_rateMethodFactory->create();
-        	$method->setCarrier($this->_code);
-        	$method->setCarrierTitle("Advance Rate");
-        	$method->setMethod('rate_free');
-        	$method->setMethodTitle('Free Shipping');
-        	$method->setPrice('0.00');
-        	$method->setCost('0.00');
+            
+            $method = $this->_rateMethodFactory->create();
+            $method->setCarrier($this->_code);
+            $method->setCarrierTitle("Advance Rate");
+            $method->setMethod('rate_free');
+            $method->setMethodTitle('Free Shipping');
+            $method->setPrice('0.00');
+            $method->setCost('0.00');
             $method->setMethodDescription('#NA');
-        	$result->append($method);
-        	
-        }
+            $result->append($method);
+            
+        }*/
         
         
         if (!empty($rates)) {
@@ -189,10 +196,15 @@ class Advancerate extends \Magento\Shipping\Model\Carrier\AbstractCarrier implem
                     $method->setMethod('advancedmatrix'.$count++);
                     $method->setMethodTitle($rate['label']);
                     /* Icube Update - Check wheter get Free Shipping Yes => set price into 0 */
-                    if ($this->_scopeConfig->getValue('carriers/advancedmatrix/free_shipping', \Magento\Store\Model\ScopeInterface::SCOPE_STORE) && 
-                ($request->getFreeShipping() === true || 
-                ($request->getPackageValue() >= $this->_scopeConfig->getValue('carriers/advancedmatrix/min_freeshipping_amount', \Magento\Store\Model\ScopeInterface::SCOPE_STORE) && 
-                $request->getPackageWeight() <= $this->_scopeConfig->getValue('carriers/advancedmatrix/max_freeshipping_weight', \Magento\Store\Model\ScopeInterface::SCOPE_STORE))))
+                    if ( $var_free_shipping && 
+                        (
+                            $request->getFreeShipping() === true && 
+                                (
+                                    ($request->getPackageValue() >=  $var_min_freeshipping_amount || $var_min_freeshipping_amount == "") &&
+                                    ($request->getPackageWeight() <= $var_max_freeshipping_weight || $var_max_freeshipping_weight == "")
+                                )
+                        )
+                    )
                     {
                         $method->setPrice('0.00');
                         $method->setCost('0.00');
@@ -235,42 +247,6 @@ class Advancerate extends \Magento\Shipping\Model\Carrier\AbstractCarrier implem
     {
         return $this->_tablerateFactory->create()->getRates($request);
     }
-
-    /**
-     * @param string $type
-     * @param string $code
-     * @return array
-     * @throws \Magento\Framework\Exception\LocalizedException
-     */
-    /* public function getCode($type, $code = '')
-    {
-        $codes = [
-            'condition_name' => [
-                'package_weight' => __('Weight vs. Destination'),
-                'package_value' => __('Price vs. Destination'),
-                'package_qty' => __('# of Items vs. Destination'),
-            ],
-            'condition_name_short' => [
-                'package_weight' => __('Weight (and above)'),
-                'package_value' => __('Order Subtotal (and above)'),
-                'package_qty' => __('# of Items (and above)'),
-            ],
-        ];
-
-        if (!isset($codes[$type])) {
-            throw new LocalizedException(__('Please correct Table Rate code type: %1.', $type));
-        }
-
-        if ('' === $code) {
-            return $codes[$type];
-        }
-
-        if (!isset($codes[$type][$code])) {
-            throw new LocalizedException(__('Please correct Table Rate code for type %1: %2.', $type, $code));
-        }
-
-        return $codes[$type][$code];
-    } */
 
     /**
      * Get allowed shipping methods
